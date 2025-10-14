@@ -1,9 +1,7 @@
 package com.example.demoproject.utils;
 
-import com.example.demoproject.exceptions.BadRequestException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -19,7 +17,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
 
@@ -29,14 +26,6 @@ public final class BaseUtils {
     public static final String EXTENSION_SEPARATOR = ".";
     public static final String emailRegex = "^[\\w!#$%&amp;'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&amp;'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
     public static final Pattern emailPattern = Pattern.compile(emailRegex);
-    public static final List<String> NOT_PERMISSIONS = List.of("2025091849", "2025091946", "2025092050");
-    public static final List<String> NOT_ALLOWED_ORIGINS = List.of("https://rams.soliq.uz", "https://dev-rams.soliq.uz");
-    private static final short[] BUDGET_NA1_CODES = {19, 32, 34, 36, 37, 38, 41};
-    private static final short[] ACTIVE_COMPANY_STATES = {0, 11, 20, 12, 21, 23, 24};
-    private static final short[] BLOCKED_COMPANY_STATES = {10, 30, 31, 32, 33, 34};
-    private static final short[] PRIVILEGES_ALWAYS_USE = {27, 28, 29, 30};
-    private static final char[] VALID_PINFL_PREFIX = {'2', '3', '4', '5', '6'};
-    public static final String BASE_MOBILE = "930815351";
     private static final String[] NEW_MONTHS_IN_RUSSIAN = {"января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"};
     private static final Pattern PHONE_PATTERN = Pattern.compile("^(20|33|55|50|77|88|90|91|93|94|95|97|98|99)\\d{7}$");
     private static final List<String> POSSIBLE_IP_HEADERS = List.of(
@@ -53,9 +42,6 @@ public final class BaseUtils {
             "WL-Proxy-Client-IP",
             "X-Real-IP"
     );
-    private static final String KEY = "cZw7UZiZldnG+8FVnWgiSA==";
-    private static final String INIT_VECTOR = "secret8FVnWgiSAQ";
-    private static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
     public final String DATE_PATTERN_WITH_DASH = "yyyy-dd-MM";
     public final String DATE_PATTERN_WITH_POINT = "dd.MM.yyyy";
     public final String DATE_TIME_PATTERN_WITH_POINT = "dd.MM.yyyy HH:mm:ss";
@@ -109,12 +95,6 @@ public final class BaseUtils {
 
     public String toBase64(@NonNull String text) {
         return Base64.getEncoder().encodeToString(text.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public Integer getLocationByNs10Ns11(short ns10Code, short ns11Code) {
-        String ns10Str = String.format("%02d", ns10Code);
-        String ns11Str = String.format("%02d", ns11Code);
-        return Integer.parseInt("1" + ns10Str + ns11Str);
     }
 
     public String getStackTrace(Throwable throwable) {
@@ -185,39 +165,6 @@ public final class BaseUtils {
         return cleanName.toString();
     }
 
-    public boolean isValidTin(String tin) {
-        try {
-            String tin9;
-            double sum = 0;
-            if (this.isNotEmpty(tin) && tin.length() == 9) {
-                tin9 = tin.substring(8, 9);
-                sum = sum + Double.parseDouble(tin.substring(0, 1)) * 37;
-                sum = sum + Double.parseDouble(tin.substring(1, 2)) * 29;
-                sum = sum + Double.parseDouble(tin.substring(2, 3)) * 23;
-                sum = sum + Double.parseDouble(tin.substring(3, 4)) * 19;
-                sum = sum + Double.parseDouble(tin.substring(4, 5)) * 17;
-                sum = sum + Double.parseDouble(tin.substring(5, 6)) * 13;
-                sum = sum + Double.parseDouble(tin.substring(6, 7)) * 7;
-                sum = sum + Double.parseDouble(tin.substring(7, 8)) * 3;
-                sum = sum / 11;
-                sum = Math.floor((1 - (sum - Math.floor(sum))) * 9);
-                return tin9.equals(String.valueOf(sum).substring(0, 1));
-            }
-            return false;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    public boolean isValidPinfl(String pinfl) {
-        return this.isNotEmpty(pinfl) &&
-               pinfl.length() == 14 &&
-               this.isNumeric(pinfl) &&
-               this.contains(pinfl.charAt(0), VALID_PINFL_PREFIX) &&
-               Integer.parseInt(pinfl.substring(1, 3)) <= 31 &&
-               Integer.parseInt(pinfl.substring(3, 5)) <= 12;
-    }
-
     public boolean isNumeric(String charSequence) {
         if (isEmpty(charSequence)) return false;
         for (int i = 0; i < charSequence.length(); i++)
@@ -231,39 +178,12 @@ public final class BaseUtils {
         return new String(Base64.getDecoder().decode(token));
     }
 
-    public boolean isBudgetOrganization(short businessStructure) {
-        return this.contains(businessStructure, BUDGET_NA1_CODES);
-    }
-
-    public boolean privilegeAlwaysUse(short privilegeId) {
-        return this.contains(privilegeId, PRIVILEGES_ALWAYS_USE);
-    }
-
-    public boolean isActiveCompany(short status) {
-        return this.contains(status, ACTIVE_COMPANY_STATES);
-    }
-
-
-
     public String decimalToHex(String number) {
         return Long.toHexString(Long.parseLong(number));
     }
 
     public String getFingerPrintFileName(String fingerType, String serialNumber) {
         return fingerType + "_" + serialNumber + ".png";
-    }
-
-    @NotNull
-    public Date getCalendarDate(Date serverDate) {
-        Calendar serverCal = Calendar.getInstance();
-        serverCal.setTime(serverDate);
-        serverCal.add(Calendar.YEAR, 2);
-        return new Date(serverCal.getTimeInMillis());
-    }
-
-    public Date correctDateValidTo(Date validTo, Date serverDate) {
-        serverDate = this.getCalendarDate(serverDate);
-        return (Math.abs(serverDate.getTime() - validTo.getTime()) / 1000) < 86400 ? serverDate : validTo;
     }
 
 }
