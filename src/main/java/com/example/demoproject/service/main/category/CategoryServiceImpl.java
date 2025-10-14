@@ -32,10 +32,11 @@ public class CategoryServiceImpl extends AbstractService<CategoryRepository, Cat
     public ResponseEntity<Data<List<CategoryDTO>>> getAll(@NonNull CategoryCriteria criteria) {
 
         List<Category> categoryList = repository.findAll(criteria);
+        Long totalCount = repository.getTotalCount(criteria);
 
         List<CategoryDTO> categoryDTOList = mapper.toDto(categoryList);
 
-        return new ResponseEntity<>(new Data<>(categoryDTOList), HttpStatus.OK);
+        return new ResponseEntity<>(new Data<>(categoryDTOList, totalCount), HttpStatus.OK);
     }
 
     @Override
