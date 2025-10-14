@@ -6,6 +6,7 @@ public final class ErrorCode {
     public static final String UNKNOWN_ERROR = "unknown_error";
     public static final String ACCESS_DENIED = "access_denied";
     public static final String INPUT_CANNOT_BE_NULL = "input_cannot_be_null";
+    public static final String ID_CANNOT_BE_NULL = "input_cannot_be_null";
     public static final String INPUT_CANNOT_BE_BLANK = "input_cannot_be_blank";
     public static final String JURIDICAL_TIN_CANNOT_BE_BLANK = "juridical_tin_cannot_be_blank";
     public static final String FOREIGN_TIN_IS_RESTRICTED_FROM_GENERATING_KEY = "foreign_tin_is_restricted_from_generating_key";
@@ -151,6 +152,10 @@ public final class ErrorCode {
     public static final String NOT_ENOUGH_MONEY_FOR_KEY = "not_enough_money_for_key";
     public static final String HOST_NOT_FOUND = "HOST_NOT_FOUND";
     public static final String IP_NOT_FOUND = "IP_NOT_FOUND";
+    public static final String NAME_NOT_NULL = "NAME_NOT_NULL";
+    public static final String PRICE_NOT_NULL = "PRICE_NOT_NULL";
+    public static final String CATEGORY_ID_NOT_NULL = "CATEGORY_ID_NOT_NULL";
+    public static final String ID_NOT_NULL = "ID_NOT_NULL";
 
     private ErrorCode() {
         throw new AssertionError("you will not get an instance of ErrorCode class");
