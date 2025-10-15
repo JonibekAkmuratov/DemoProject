@@ -9,25 +9,24 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 
 
-
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class AppErrorDTO {
+public class ErrorDTO {
     private final LocalDateTime timestamp = LocalDateTime.now();
-    private String errorPath;
-    private String errorMessage;
-    private Object errorBody;
+    private String path;
+    private String message;
+    private Object body;
 
-    public AppErrorDTO(String errorPath, String errorMessage) {
-        this.errorPath = errorPath;
-        this.errorMessage = errorMessage;
+    public ErrorDTO(String errorPath, String errorMessage) {
+        this.path = errorPath;
+        this.message = errorMessage;
     }
 
-    public AppErrorDTO(String errorPath, String errorMessage, Object errorBody) {
+    public ErrorDTO(String errorPath, String errorMessage, Object errorBody) {
         this(errorPath, errorMessage);
-        this.errorBody = errorBody;
+        this.body = errorBody;
     }
 }

@@ -1,5 +1,6 @@
 server:
   port: 80
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/demo
@@ -13,3 +14,20 @@ spring:
       hibernate:
         enable_lazy_load_no_trans: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# JWT Configuration
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000 # 24 hours in milliseconds
+  refresh-expiration: 604800000 # 7 days in milliseconds
+
+# Telegram Bot Configuration
+telegram:
+  bot:
+    enabled: false  # true qilib yoqing
+    token: YOUR_BOT_TOKEN_HERE  # @BotFather dan olingan token
+    chat-id: YOUR_CHAT_ID_HERE  # Sizning chat ID
+
+# OpenAPI/Swagger (agar kerak bo'lsa)
+openapi:
+  enabled: false

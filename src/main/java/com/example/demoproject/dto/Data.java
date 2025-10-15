@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class Data<T> {
     private boolean success;
     private T body;
-    private AppErrorDTO error;
+    private ErrorDTO error;
     private Long total;
 
     public Data(T body) {
@@ -26,7 +26,7 @@ public class Data<T> {
         this.success = true;
     }
 
-    public Data(AppErrorDTO error) {
+    public Data(ErrorDTO error) {
         this.error = error;
         this.success = false;
     }

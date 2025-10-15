@@ -1,4 +1,4 @@
-package com.example.demoproject.controller.auth;
+package com.example.demoproject.entity.auth;
 
 import com.example.demoproject.entity.Auditable;
 import jakarta.persistence.*;
