@@ -28,7 +28,6 @@ public class Product extends Auditable {
     @Column(nullable = false)
     private Double price;
 
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @ToString.Exclude
     private Category category;

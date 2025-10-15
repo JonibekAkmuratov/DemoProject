@@ -117,7 +117,6 @@ public final class ErrorCode {
     public static final String PHONE_COUNT_IS_OUT_OF_LIMIT_BY_PINFL = "phone_count_is_out_of_limit_by_pinfl";
     public static final String EMAIL_COUNT_IS_OUT_OF_LIMIT_BY_PINFL = "email_count_is_out_of_limit_by_pinfl";
     public static final String INVALID_JURIDIC_PRIVILEGE = "invalid_juridic_privilege";
-    public static final String INVALID_PRIVILEGE_ID_FOR_RAMS = "invalid_privilege_id_for_rams";
 
 
     public static final String CAMS_SERVER_ERROR = "cams_server_error";

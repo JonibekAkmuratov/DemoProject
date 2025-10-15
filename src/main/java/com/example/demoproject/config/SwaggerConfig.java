@@ -38,8 +38,8 @@ public class SwaggerConfig {
     public OpenAPI springOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("RAMS SERVICE")
-                        .description("RAMS SERVICE API")
+                        .title("DEMO SERVICE")
+                        .description("DEMO SERVICE API")
                         .version("2.O")
                         .contact(new Contact()
                                 .name("test.uz")

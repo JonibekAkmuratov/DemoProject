@@ -43,7 +43,7 @@ public abstract class Auditable implements BaseDomain {
     @Column(updatable = false, nullable = false)
     private String updatedBy;
 
-    @Column(name = "is_deleted")
+    @Column(name = "deleted")
     private boolean deleted = false;
 
 }

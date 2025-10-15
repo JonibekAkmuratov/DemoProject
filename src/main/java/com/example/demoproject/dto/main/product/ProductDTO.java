@@ -15,7 +15,6 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ProductDTO  implements DTO {
 
-
     private Long id;
 
     private String name;
