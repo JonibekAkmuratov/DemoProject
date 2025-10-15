@@ -1,5 +1,6 @@
 package com.example.demoproject.controller.main;
 
+import com.example.demoproject.annotation.RateLimit;
 import com.example.demoproject.controller.AbstractController;
 import com.example.demoproject.criteria.main.CategoryCriteria;
 import com.example.demoproject.dto.Data;
@@ -32,6 +33,13 @@ public class CategoryController extends AbstractController<CategoryService> {
     }
 
     @GetMapping
+    @RateLimit(
+            type = RateLimit.RateLimitType.API,
+            capacity = 5,
+            refillTokens = 5,
+            refillDuration = 1,  // 1 daqiqada 5 ta
+            keyPattern = "{ip}"
+)
     public ResponseEntity<Data<List<CategoryDTO>>> getAll(CategoryCriteria criteria) {
         return service.getAll(criteria);
     }

@@ -7,19 +7,18 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 
-
 @Getter
 @Setter
 @NoArgsConstructor
 @SuperBuilder
 @ToString
-public class GenericCriteria  {
+public class GenericCriteria {
     protected String sortBy;
     protected String sortDirection;
-    protected boolean ignoreDeletion = false;
+    protected boolean   ignoreDeletion = false;
     private Number selfId;
-    private Integer page;
-    private Integer size;
+    private Integer page = 0;
+    private Integer size = 30;
     private String allSearch;
 
     public GenericCriteria(Number selfId, Integer page, Integer size, String sortBy, String sortDirection, String allSearch) {

@@ -7,9 +7,8 @@ import com.example.demoproject.entity.main.Product;
 import com.example.demoproject.mapper.BaseMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ProductMapper extends BaseMapper<Product, ProductDTO, ProductCreateDTO, ProductUpdateDTO> {
 
 }

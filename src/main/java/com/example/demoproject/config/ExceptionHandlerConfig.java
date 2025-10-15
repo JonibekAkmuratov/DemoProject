@@ -8,6 +8,7 @@ import com.example.demoproject.exceptions.*;
 import com.example.demoproject.exceptions.key_exceptions.KeyCreateException;
 import com.example.demoproject.utils.BaseUtils;
 import jakarta.persistence.PersistenceException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -134,6 +135,29 @@ public class ExceptionHandlerConfig {
     public ResponseEntity<Data<ErrorDTO>> handleException(Exception e) {
         log.error("Exception : {}", utils.getStackTrace(e));
         return appErrorDto(ErrorCode.UNKNOWN_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<Data<ErrorDTO>> handleRateLimitExceededException(
+            RateLimitExceededException e,
+            HttpServletResponse response) {
+
+        log.warn("Rate limit exceeded: {}", e.getMessage());
+
+        // Add Retry-After header
+        response.setHeader("Retry-After", String.valueOf(e.getRetryAfterSeconds()));
+        response.setHeader("X-RateLimit-Limit", "100");
+        response.setHeader("X-RateLimit-Remaining", "0");
+        response.setHeader("X-RateLimit-Reset",
+                String.valueOf(System.currentTimeMillis() / 1000 + e.getRetryAfterSeconds()));
+
+        ErrorDTO errorDto = new ErrorDTO(
+                utils.getRequestURI(),
+                e.getMessage(),
+                "RATE_LIMIT_EXCEEDED"
+        );
+
+        return new ResponseEntity<>(new Data<>(errorDto), HttpStatus.TOO_MANY_REQUESTS);
     }
 
     private ResponseEntity<Data<ErrorDTO>> appErrorDto(String code, String argument) {

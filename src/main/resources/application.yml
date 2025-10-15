@@ -8,26 +8,50 @@ spring:
     password: root123
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         enable_lazy_load_no_trans: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=100000,expireAfterWrite=3600s
 
 # JWT Configuration
 jwt:
-  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-  expiration: 86400000 # 24 hours in milliseconds
-  refresh-expiration: 604800000 # 7 days in milliseconds
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+# Rate Limiting Configuration
+rate-limit:
+  enabled: true
+  global:
+    capacity: 100  # Umumiy so'rovlar soni
+    refill-tokens: 100  # Har bir intervalda qayta to'ldiriladi
+    refill-duration: 1  # Minutlarda
+  auth:
+    capacity: 5  # Login/Register uchun
+    refill-tokens: 5
+    refill-duration: 1
+  api:
+    capacity: 50  # API endpointlar uchun
+    refill-tokens: 50
+    refill-duration: 1
+  per-user:
+    capacity: 30  # Har bir user uchun
+    refill-tokens: 30
+    refill-duration: 1
 
 # Telegram Bot Configuration
 telegram:
   bot:
-    enabled: false  # true qilib yoqing
-    token: YOUR_BOT_TOKEN_HERE  # @BotFather dan olingan token
-    chat-id: YOUR_CHAT_ID_HERE  # Sizning chat ID
+    enabled: false
+    token: ${TELEGRAM_BOT_TOKEN:YOUR_BOT_TOKEN_HERE}
+    chat-id: ${TELEGRAM_CHAT_ID:YOUR_CHAT_ID_HERE}
 
-# OpenAPI/Swagger (agar kerak bo'lsa)
+# OpenAPI/Swagger
 openapi:
   enabled: true
