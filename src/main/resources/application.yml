@@ -30,4 +30,4 @@ telegram:
 
 # OpenAPI/Swagger (agar kerak bo'lsa)
 openapi:
-  enabled: false
+  enabled: true
