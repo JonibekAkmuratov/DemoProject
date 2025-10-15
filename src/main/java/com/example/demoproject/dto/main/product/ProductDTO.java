@@ -6,10 +6,12 @@ import com.example.demoproject.exceptions.ErrorCode;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
 public class ProductDTO  implements DTO {
 
