@@ -14,6 +14,13 @@ import java.util.Map;
 @Repository
 public class ProductRepositoryImpl extends GenericDao<Product, Long, ProductCriteria> implements ProductRepository {
 
+    @Override
+    protected StringBuilder joinStringOnQuerying(ProductCriteria criteria) {
+        if (criteria.getCategoryId() != null) {
+            return new StringBuilder(" LEFT JOIN t.category c ");
+        }
+        return super.joinStringOnQuerying(criteria);
+    }
 
     @Override
     protected void defineCriteriaOnQuerying(ProductCriteria criteria, List<String> whereCause, Map<String, Object> params, StringBuilder queryBuilder) {
