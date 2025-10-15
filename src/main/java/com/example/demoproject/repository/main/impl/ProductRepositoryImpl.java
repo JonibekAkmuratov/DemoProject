@@ -24,7 +24,7 @@ public class ProductRepositoryImpl extends GenericDao<Product, Long, ProductCrit
         }
 
         if (utils.isNotEmpty(criteria.getCategoryId())) {
-            whereCause.add("t.category_id = :categoryId");
+            whereCause.add("c.id = :categoryId");
             params.put("categoryId", criteria.getCategoryId());
         }
 
