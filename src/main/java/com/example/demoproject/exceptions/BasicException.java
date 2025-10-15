@@ -20,6 +20,6 @@ public class BasicException extends RuntimeException {
         this.code = code;
 
         if (data != null && data.getError() != null)
-            this.errorMessage = data.getError().getErrorMessage();
+            this.errorMessage = data.getError().getMessage();
     }
 }

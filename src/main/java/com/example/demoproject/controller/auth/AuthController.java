@@ -19,25 +19,25 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<Data<AuthResDTO>> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<Data<AuthResDTO>> register(@Valid @RequestBody RegisterReqDTO request) {
         AuthResDTO response = authService.register(request);
         return new ResponseEntity<>(new Data<>(response), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Data<AuthResDTO>> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<Data<AuthResDTO>> login(@Valid @RequestBody LoginReqDTO request) {
         AuthResDTO response = authService.login(request);
         return ResponseEntity.ok(new Data<>(response));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<Data<AuthResDTO>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<Data<AuthResDTO>> refreshToken(@Valid @RequestBody RefreshTokenReqDTO request) {
         AuthResDTO response = authService.refreshToken(request);
         return ResponseEntity.ok(new Data<>(response));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Data<UserInfo>> getCurrentUser() {
+    public ResponseEntity<Data<UserInfoDTO>> getCurrentUser() {
         // TODO: Implement get current user from SecurityContext
         return ResponseEntity.ok(new Data<>(null));
     }
