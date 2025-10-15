@@ -11,5 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CategoryCriteria extends GenericCriteria {
 
+    private String name;
 
 }
