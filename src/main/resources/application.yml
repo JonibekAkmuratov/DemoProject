@@ -18,6 +18,12 @@ spring:
     type: caffeine
     caffeine:
       spec: maximumSize=100000,expireAfterWrite=3600s
+  web:
+    resources:
+      static-locations: classpath:/static/
+  mvc:
+    static-path-pattern: /static/**
+    dispatch-options-request: true
 
 management:
   endpoint:
@@ -29,8 +35,7 @@ management:
       exposure:
         include: health
 
-
-# JWT Configuration
+  # JWT Configuration
 jwt:
   secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
   expiration: 86400000
@@ -66,3 +71,6 @@ telegram:
 # OpenAPI/Swagger
 openapi:
   enabled: true
+
+libreoffice:
+  path=/usr/bin/libreoffice:
