@@ -1,0 +1,118 @@
+# Docker environment configuration
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/demo
+    username: postgres
+    password: root123
+    hikari:
+      connection-timeout: 20000
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 300000
+      max-lifetime: 1200000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false  # Production da false qiling
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Tashkent
+
+  # Redis configuration (optional)
+  data:
+    redis:
+      host: redis
+      port: 6379
+      password: redis123
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=100000,expireAfterWrite=3600s
+
+  # File upload configuration
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging configuration
+logging:
+  level:
+    com.example.demoproject: INFO
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: /app/logs/demo-app.log
+    max-size: 100MB
+    max-history: 10
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  expiration: 86400000  # 24 hours
+  refresh-expiration: 604800000  # 7 days
+
+# Rate Limiting
+rate-limit:
+  enabled: true
+  global:
+    capacity: 100
+    refill-tokens: 100
+    refill-duration: 1
+  auth:
+    capacity: 5
+    refill-tokens: 5
+    refill-duration: 1
+  api:
+    capacity: 50
+    refill-tokens: 50
+    refill-duration: 1
+  per-user:
+    capacity: 30
+    refill-tokens: 30
+    refill-duration: 1
+
+# Telegram configuration
+telegram:
+  bot:
+    enabled: ${TELEGRAM_BOT_ENABLED:false}
+    token: ${TELEGRAM_BOT_TOKEN:}
+    chat-id: ${TELEGRAM_CHAT_ID:}
+
+# OpenAPI/Swagger
+openapi:
+  enabled: true

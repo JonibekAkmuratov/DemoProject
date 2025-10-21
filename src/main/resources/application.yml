@@ -71,6 +71,3 @@ telegram:
 # OpenAPI/Swagger
 openapi:
   enabled: true
-
-libreoffice:
-  path=/usr/bin/libreoffice:

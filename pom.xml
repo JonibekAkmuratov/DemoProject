@@ -97,44 +97,6 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>5.2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>5.2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.zxing</groupId>
-            <artifactId>core</artifactId>
-            <version>3.5.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.zxing</groupId>
-            <artifactId>javase</artifactId>
-            <version>3.5.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>itext7-core</artifactId>
-            <version>7.2.5</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.documents4j</groupId>
-            <artifactId>documents4j-local</artifactId>
-            <version>1.1.8</version>
-        </dependency>
-        <dependency>
-            <groupId>com.documents4j</groupId>
-            <artifactId>documents4j-transformer-msoffice</artifactId>
-            <version>1.1.8</version>
-        </dependency>
-
     </dependencies>
 
 
