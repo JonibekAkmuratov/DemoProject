@@ -5,7 +5,6 @@ import com.example.demoproject.dto.Data;
 import com.example.demoproject.dto.main.auth.CurrentUserDetailsDTO;
 import com.example.demoproject.events.TelegramAlarmEvent;
 import com.example.demoproject.exceptions.*;
-import com.example.demoproject.exceptions.key_exceptions.KeyCreateException;
 import com.example.demoproject.utils.BaseUtils;
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,11 +53,7 @@ public class ExceptionHandlerConfig {
         return appErrorDto(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(CamsClientException.class)
-    public ResponseEntity<Data<ErrorDTO>> handleCamsException(CamsClientException e) {
-        log.error("CamsException : {}", utils.getStackTrace(e));
-        return appErrorDto(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+
 
     @ExceptionHandler(BasicException.class)
     public ResponseEntity<Data<ErrorDTO>> handleBasicException(BasicException e) {
