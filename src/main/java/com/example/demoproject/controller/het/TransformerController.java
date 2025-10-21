@@ -31,6 +31,7 @@ public class TransformerController extends AbstractController<TransformerService
     }
 
     @GetMapping("/regions")
+    @RateLimit(type = RateLimit.RateLimitType.API)
     ResponseEntity<Data<List<TransformerRegionsDTO>>> getRegions(@Valid TransformerCriteria criteria) {
         Data<List<TransformerRegionsDTO>> regions = service.getRegions(criteria);
         return ResponseEntity.ok(regions);
