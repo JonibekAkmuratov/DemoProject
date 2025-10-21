@@ -106,6 +106,4 @@ public class Transformer implements BaseDomain {
     @Column(name = "ELECTRIC_LOSS_PLUS", precision = 19, scale = 2)
     private BigDecimal electricLossPlus;
 
-    @Column(name = "DELETED")
-    private Boolean deleted;
 }

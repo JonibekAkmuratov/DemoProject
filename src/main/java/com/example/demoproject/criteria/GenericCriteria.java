@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 public class GenericCriteria {
     protected String sortBy;
     protected String sortDirection;
-    protected boolean   ignoreDeletion = false;
+    protected boolean ignoreDeletion = false;
     private Number selfId;
     private Integer page = 0;
     private Integer size = 30;
