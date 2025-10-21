@@ -109,11 +109,6 @@ public class ExceptionHandlerConfig {
         return appErrorDto(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({KeyCreateException.class})
-    public ResponseEntity<Data<ErrorDTO>> handleValidationException(KeyCreateException e) {
-        log.error("KeyCreateException : {}", utils.getStackTrace(e));
-        return appErrorDto(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
 
     @ExceptionHandler(MigrationSyncException.class)
     public ResponseEntity<Data<ErrorDTO>> handleMigrationSyncException(MigrationSyncException e) {
