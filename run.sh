@@ -1,152 +1,259 @@
 #!/bin/bash
 
-echo "🔧 Manual Docker Fix - Step by Step"
+# Demo Project Docker Runner Script
 
-# Stop everything first
-echo "1. Stopping all services..."
-docker-compose down --remove-orphans 2>/dev/null || true
+set -e  # Exit on any error
 
-# Check current Dockerfile
-echo "2. Current Dockerfile content:"
-head -5 Dockerfile
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-echo ""
-echo "3. Creating new Dockerfile..."
+# Function to print colored output
+print_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
 
-# Create working Dockerfile
-cat > Dockerfile << 'EOF'
-# Multi-stage build using Eclipse Temurin
-FROM eclipse-temurin:21-jdk AS build
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
 
-# Install Maven
-RUN apt-get update && \
-    apt-get install -y maven && \
-    rm -rf /var/lib/apt/lists/*
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
 
-# Working directory
-WORKDIR /app
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
 
-# Copy pom.xml first for dependency caching
-COPY pom.xml .
-
-# Download dependencies
-RUN mvn dependency:go-offline -B
-
-# Copy source code
-COPY src ./src
-
-# Build application
-RUN mvn clean package -DskipTests
-
-# Runtime stage
-FROM eclipse-temurin:21-jre
-
-# Install packages for document conversion and curl
-RUN apt-get update && apt-get install -y \
-    libreoffice \
-    fonts-dejavu-core \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create app directory
-WORKDIR /app
-
-# Copy jar from build stage
-COPY --from=build target/DemoProject.jar app.jar
-
-# Create non-root user
-RUN addgroup --system spring && adduser --system spring --ingroup spring
-USER spring:spring
-
-# Expose port
-EXPOSE 8080
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8080/actuator/health || exit 1
-
-# Run application
-ENTRYPOINT ["java", "-jar", "app.jar"]
-EOF
-
-echo "✅ New Dockerfile created"
-
-# Remove version from docker-compose.yml
-echo "4. Fixing docker-compose.yml..."
-sed -i.bak '/^version:/d' docker-compose.yml
-echo "✅ Version removed from docker-compose.yml"
-
-# Verify .env file
-echo "5. Checking .env file..."
-if [ ! -f .env ]; then
-    cat > .env << 'EOF'
-POSTGRES_DB=demo
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=root123
-JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-TELEGRAM_BOT_TOKEN=
-TELEGRAM_CHAT_ID=
-TELEGRAM_BOT_ENABLED=false
-REDIS_PASSWORD=redis123
-SPRING_PROFILES_ACTIVE=docker
-APP_TIMEZONE=Asia/Tashkent
-LOG_LEVEL=INFO
-COMPOSE_PROJECT_NAME=demo-project
-EOF
-    echo "✅ .env file created"
-else
-    echo "✅ .env file exists"
-fi
-
-# Clean Docker cache
-echo "6. Cleaning Docker cache..."
-docker builder prune -f
-docker system prune -f
-
-# Start PostgreSQL first
-echo "7. Starting PostgreSQL..."
-docker-compose up -d postgres redis
-
-# Wait for PostgreSQL
-echo "8. Waiting for PostgreSQL to be ready..."
-sleep 15
-
-# Build and start app
-echo "9. Building application (this may take 3-5 minutes)..."
-docker-compose build --no-cache demo-app
-
-echo "10. Starting application..."
-docker-compose up -d demo-app
-
-# Wait and check health
-echo "11. Waiting for application to start..."
-sleep 45
-
-echo "12. Checking application health..."
-for i in {1..20}; do
-    if curl -s http://localhost:8080/actuator/health | grep -q "UP"; then
-        echo "✅ Application is healthy!"
-        break
+# Check if Docker is installed
+check_docker() {
+    if ! command -v docker &> /dev/null; then
+        print_error "Docker is not installed. Please install Docker first."
+        exit 1
     fi
-    echo "⏳ Attempt $i/20 - waiting..."
-    sleep 10
-done
 
-# Show final status
-echo ""
-echo "🎯 Final Status:"
-docker-compose ps
+    if ! command -v docker-compose &> /dev/null; then
+        print_error "Docker Compose is not installed. Please install Docker Compose first."
+        exit 1
+    fi
+}
 
-echo ""
-echo "📍 Application URLs:"
-echo "🌍 Main App: http://localhost:8080"
-echo "📚 Swagger: http://localhost:8080/swagger-ui.html"
-echo "❤️ Health: http://localhost:8080/actuator/health"
+# Clean up function
+cleanup() {
+    print_info "Cleaning up old containers and images..."
+    docker-compose down --remove-orphans
+    docker system prune -f
+    print_success "Cleanup completed"
+}
 
-echo ""
-echo "🔍 Quick Test:"
-curl -s http://localhost:8080/actuator/health || echo "❌ Application not responding yet"
+# Build and run
+build_and_run() {
+    print_info "Building and starting the application..."
 
-echo ""
-echo "📊 View logs: docker-compose logs -f demo-app"
-echo "🛑 Stop all: docker-compose down"
+    # Copy environment file if it doesn't exist
+    if [ ! -f .env ]; then
+        print_warning ".env file not found. Creating from template..."
+        cp .env.example .env 2>/dev/null || true
+    fi
+
+    # Build and start services
+    docker-compose up --build -d
+
+    print_success "Application is starting..."
+    print_info "Waiting for services to be ready..."
+
+    # Wait for application to be ready
+    timeout=120
+    counter=0
+    while [ $counter -lt $timeout ]; do
+        if curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
+            break
+        fi
+        echo -n "."
+        sleep 2
+        counter=$((counter + 2))
+    done
+
+    if [ $counter -ge $timeout ]; then
+        print_error "Application failed to start within $timeout seconds"
+        docker-compose logs demo-app
+        exit 1
+    fi
+
+    echo ""
+    print_success "Application is ready!"
+    print_info "🌍 Application: http://localhost:8080"
+    print_info "📚 Swagger UI: http://localhost:8080/swagger-ui.html"
+    print_info "❤️  Health Check: http://localhost:8080/actuator/health"
+    print_info "🗄️  Database: localhost:5432 (demo/postgres/root123)"
+}
+
+# Stop services
+stop_services() {
+    print_info "Stopping services..."
+    docker-compose down
+    print_success "Services stopped"
+}
+
+# Show logs
+show_logs() {
+    if [ -n "$1" ]; then
+        docker-compose logs -f "$1"
+    else
+        docker-compose logs -f
+    fi
+}
+
+# Show status
+show_status() {
+    print_info "Service Status:"
+    docker-compose ps
+
+    print_info "\nContainer Resources:"
+    docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.BlockIO}}"
+}
+
+# Main menu
+show_menu() {
+    echo ""
+    echo "==================================="
+    echo "    Demo Project Docker Manager"
+    echo "==================================="
+    echo "1. Build and Run"
+    echo "2. Stop Services"
+    echo "3. Restart Services"
+    echo "4. Show Logs"
+    echo "5. Show Status"
+    echo "6. Clean Up"
+    echo "7. Enter Container Shell"
+    echo "8. Database Shell"
+    echo "9. Exit"
+    echo ""
+}
+
+# Enter container shell
+enter_shell() {
+    print_info "Available containers:"
+    docker-compose ps --format "table {{.Service}}\t{{.State}}"
+    echo ""
+    read -p "Enter container name (demo-app/postgres/redis): " container
+
+    case $container in
+        demo-app)
+            docker-compose exec demo-app /bin/bash
+            ;;
+        postgres)
+            docker-compose exec postgres psql -U postgres -d demo
+            ;;
+        redis)
+            docker-compose exec redis redis-cli -a redis123
+            ;;
+        *)
+            print_error "Invalid container name"
+            ;;
+    esac
+}
+
+# Database shell
+db_shell() {
+    print_info "Connecting to PostgreSQL database..."
+    docker-compose exec postgres psql -U postgres -d demo
+}
+
+# Check Docker installation
+check_docker
+
+# Handle command line arguments
+case "${1:-menu}" in
+    "build"|"start"|"up")
+        build_and_run
+        ;;
+    "stop"|"down")
+        stop_services
+        ;;
+    "restart")
+        stop_services
+        sleep 2
+        build_and_run
+        ;;
+    "logs")
+        show_logs "$2"
+        ;;
+    "status")
+        show_status
+        ;;
+    "clean")
+        cleanup
+        ;;
+    "shell")
+        enter_shell
+        ;;
+    "db")
+        db_shell
+        ;;
+    "menu")
+        while true; do
+            show_menu
+            read -p "Choose an option [1-9]: " choice
+
+            case $choice in
+                1)
+                    build_and_run
+                    ;;
+                2)
+                    stop_services
+                    ;;
+                3)
+                    stop_services
+                    sleep 2
+                    build_and_run
+                    ;;
+                4)
+                    echo "Enter service name (or press Enter for all):"
+                    read service
+                    show_logs "$service"
+                    ;;
+                5)
+                    show_status
+                    ;;
+                6)
+                    cleanup
+                    ;;
+                7)
+                    enter_shell
+                    ;;
+                8)
+                    db_shell
+                    ;;
+                9)
+                    print_info "Goodbye!"
+                    exit 0
+                    ;;
+                *)
+                    print_error "Invalid option. Please choose 1-9."
+                    ;;
+            esac
+
+            echo ""
+            read -p "Press Enter to continue..."
+        done
+        ;;
+    *)
+        echo "Usage: $0 {build|stop|restart|logs|status|clean|shell|db|menu}"
+        echo ""
+        echo "Commands:"
+        echo "  build    - Build and start all services"
+        echo "  stop     - Stop all services"
+        echo "  restart  - Restart all services"
+        echo "  logs     - Show service logs"
+        echo "  status   - Show service status"
+        echo "  clean    - Clean up containers and images"
+        echo "  shell    - Enter container shell"
+        echo "  db       - Connect to database"
+        echo "  menu     - Show interactive menu (default)"
+        exit 1
+        ;;
+esac
