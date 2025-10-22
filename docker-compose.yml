@@ -73,21 +73,6 @@ services:
       timeout: 5s
       retries: 3
 
-  # Nginx (Optional - reverse proxy)
-  nginx:
-    image: nginx:alpine
-    container_name: demo-nginx
-    restart: unless-stopped
-    depends_on:
-      - demo-app
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/ssl:/etc/nginx/ssl  # SSL certificates
-    networks:
-      - demo-network
 
 volumes:
   postgres_data:
